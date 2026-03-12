@@ -1,0 +1,16 @@
+[project]
+name = "digital-archive"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "django>=6.0.3",
+    "psycopg[binary]>=3.3.3",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.3.1",
+    "flake8>=7.3.0",
+    "flake8-bugbear>=25.11.29",
+]
