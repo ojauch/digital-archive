@@ -22,24 +22,9 @@ def run_crawl(crawl_id):
     image_name = "webrecorder/browsertrix-crawler"
     client.images.pull(image_name)
 
-    command = [
-        "crawl",
-        "--url",
-        config.url,
-        "--generateWACZ",
-        "--text",
-        "--collection",
-        str(crawl.pk),
-        "--scopeType",
-        config.scope,
-    ]
-
-    if config.extra_hops:
-        command.append("--extraHops")
-        command.append(str(config.extra_hops))
-
     os.makedirs(settings.CRAWL_DIRECTORY, exist_ok=True)
 
+    command = get_crawler_command(crawl)
     container = client.containers.create(
         image_name,
         command,
@@ -77,6 +62,62 @@ def run_crawl(crawl_id):
     shutil.rmtree(os.path.join(settings.CRAWL_DIRECTORY, "collections", str(crawl.pk)))
 
     crawl.save()
+
+
+def get_crawler_command(crawl):
+    config = crawl.config
+    command = [
+        "crawl",
+        "--url",
+        config.url,
+        "--generateWACZ",
+        "--collection",
+        str(crawl.pk),
+        "--scopeType",
+        config.scope,
+        "--workers",
+        str(config.workers),
+        "--pageLimit",
+        str(config.page_limit),
+        "--pageLoadTimeout",
+        str(config.page_load_timeout),
+        "--behaviorTimeout",
+        str(config.behavior_timeout),
+        "--sizeLimit",
+        str(config.size_limit),
+        "--timeLimit",
+        str(config.time_limit),
+        "--maxPageRetries",
+        str(config.max_page_retries),
+        "--title",
+        config.name,
+        "--description",
+        config.description,
+    ]
+
+    if config.extra_hops:
+        command.append("--extraHops")
+        command.append(str(config.extra_hops))
+
+    if config.text_extract:
+        command.append("--text")
+        command.append(config.text_extract)
+
+    if config.screenshots:
+        command.append("--screenshot")
+        command.append(config.screenshots)
+
+    if config.block_ads:
+        command.append("--blockAds")
+
+    if config.allow_hash_urls:
+        command.append("--allowHashUrls")
+
+    if config.lang:
+        command.append("--lang")
+        command.append(config.lang)
+
+    return command
 
 
 def get_container_log(container_id):

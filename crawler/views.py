@@ -33,9 +33,31 @@ class CrawlConfigurationDetailView(LoginRequiredMixin, DetailView):
         )
 
 
+crawl_configuration_fields = [
+    "name",
+    "description",
+    "url",
+    "scope",
+    "include",
+    "extra_hops",
+    "text_extract",
+    "screenshots",
+    "block_ads",
+    "workers",
+    "page_limit",
+    "page_load_timeout",
+    "allow_hash_urls",
+    "behavior_timeout",
+    "size_limit",
+    "time_limit",
+    "lang",
+    "max_page_retries",
+]
+
+
 class CrawlConfigurationCreateView(LoginRequiredMixin, CreateView):
     model = CrawlConfiguration
-    fields = ["name", "description", "url", "scope", "include", "extra_hops"]
+    fields = crawl_configuration_fields
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
@@ -50,7 +72,7 @@ class CrawlConfigurationCreateView(LoginRequiredMixin, CreateView):
 
 class CrawlConfigurationUpdateView(LoginRequiredMixin, UpdateView):
     model = CrawlConfiguration
-    fields = ["name", "description", "url", "scope", "include", "extra_hops"]
+    fields = crawl_configuration_fields
 
     def get_queryset(self):
         return CrawlConfiguration.objects.filter(owner=self.request.user)

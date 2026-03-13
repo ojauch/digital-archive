@@ -16,6 +16,20 @@ class CrawlConfiguration(models.Model):
         ("custom", _("Custom")),
     )
 
+    TEXT_EXTRACTION_OPTIONS = (
+        (None, _("-")),
+        ("to-pages", _("to pages")),
+        ("to-warc", _("to WARC")),
+        ("final-to-warc", _("final to WARC")),
+    )
+
+    SCREENSHOT_OPTIONS = (
+        (None, _("-")),
+        ("view", _("View")),
+        ("fullPage", _("Full Page")),
+        ("thumbnail", _("Thumbnail")),
+    )
+
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Owner"))
     name = models.CharField(max_length=250, verbose_name=_("Name"))
     description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
@@ -33,6 +47,42 @@ class CrawlConfiguration(models.Model):
         default=0,
         validators=[MinValueValidator(0)],
         verbose_name=_("Number of extra hops beyond scope"),
+    )
+    text_extract = models.CharField(
+        null=True,
+        blank=True,
+        max_length=20,
+        choices=TEXT_EXTRACTION_OPTIONS,
+        verbose_name=_("Text Extraction"),
+    )
+    screenshots = models.CharField(
+        null=True,
+        blank=True,
+        max_length=20,
+        choices=SCREENSHOT_OPTIONS,
+        verbose_name=_("Screenshots"),
+    )
+    block_ads = models.BooleanField(default=False, verbose_name=_("Block Ads"))
+    workers = models.IntegerField(
+        default=1, validators=[MinValueValidator(1)], verbose_name=_("Workers")
+    )
+    page_limit = models.IntegerField(default=0, verbose_name=_("Page Limit"))
+    page_load_timeout = models.IntegerField(
+        default=90, verbose_name=_("Page Load Timeout")
+    )
+    allow_hash_urls = models.BooleanField(
+        default=False, verbose_name=_("Allow Hash URLs")
+    )
+    behavior_timeout = models.IntegerField(
+        default=90, verbose_name=_("Behavior Timeout")
+    )
+    size_limit = models.IntegerField(default=0, verbose_name=_("Size Limit"))
+    time_limit = models.IntegerField(default=0, verbose_name=_("Time Limit"))
+    lang = models.CharField(
+        max_length=10, null=True, blank=True, verbose_name=_("Language Code")
+    )
+    max_page_retries = models.IntegerField(
+        default=2, verbose_name=_("Max Page Retries")
     )
 
     def __str__(self):
