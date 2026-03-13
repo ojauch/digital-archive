@@ -7,6 +7,7 @@ from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext as _
 from django.http import HttpResponseNotAllowed, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
+from django.db.models import Sum
 
 from .models import CrawlConfiguration, Crawl
 from .crawl_runner import run_crawl, get_container_log
@@ -17,7 +18,9 @@ class CrawlConfigurationListView(LoginRequiredMixin, ListView):
     context_object_name = "crawl_configs"
 
     def get_queryset(self):
-        return CrawlConfiguration.objects.filter(owner=self.request.user)
+        return CrawlConfiguration.objects.filter(owner=self.request.user).annotate(
+            size=Sum("crawls__wacz_file_size")
+        )
 
 
 class CrawlConfigurationDetailView(LoginRequiredMixin, DetailView):
@@ -25,7 +28,9 @@ class CrawlConfigurationDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "crawl_config"
 
     def get_queryset(self):
-        return CrawlConfiguration.objects.filter(owner=self.request.user)
+        return CrawlConfiguration.objects.filter(owner=self.request.user).annotate(
+            size=Sum("crawls__wacz_file_size")
+        )
 
 
 class CrawlConfigurationCreateView(LoginRequiredMixin, CreateView):

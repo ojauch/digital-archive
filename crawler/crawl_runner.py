@@ -69,7 +69,9 @@ def run_crawl(crawl_id):
         relative_wacz_path = os.path.join("waczs", f"{crawl.pk}.wacz")
         new_wacz_path = os.path.join(settings.MEDIA_ROOT, relative_wacz_path)
         os.rename(wacz_path, new_wacz_path)
+        wacz_file_size = os.path.getsize(new_wacz_path)
         crawl.wacz_archive.name = relative_wacz_path
+        crawl.wacz_file_size = wacz_file_size
 
     # clean up crawl directory
     shutil.rmtree(os.path.join(settings.CRAWL_DIRECTORY, "collections", str(crawl.pk)))

@@ -12,12 +12,14 @@
                 <th>{% translate "Name" %}</th>
                 <th>{% translate "URL" %}</th>
                 <th>{% translate "Scope" %}</th>
+                <th>{% translate "Archive Size" %}</th>
             </tr>
             {% for config in crawl_configs %}
                 <tr>
                     <td>{{ config.name }}</td>
                     <td>{{ config.url }}</td>
                     <td>{{ config.get_scope_display }}</td>
+                    <td>{{ config.size|filesizeformat }}</td>
                     <td><a href="{% url 'crawl_configuration_detail' pk=config.pk %}">Details</a></td>
                 </tr>
             {% endfor %}

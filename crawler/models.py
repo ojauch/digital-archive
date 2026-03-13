@@ -73,6 +73,12 @@ class Crawl(models.Model):
     wacz_archive = models.FileField(
         upload_to="waczs/", null=True, blank=True, verbose_name=_("WACZ Archive")
     )
+    wacz_file_size = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0)],
+        verbose_name=_("WACZ File Size"),
+    )
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]

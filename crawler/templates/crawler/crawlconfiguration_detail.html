@@ -37,6 +37,10 @@
             <th>{% translate 'Extra Hops' %}</th>
             <td>{{ crawl_config.extra_hops|default:'-' }}</td>
         </tr>
+        <tr>
+            <th>{% translate 'Archive Size' %}</th>
+            <td>{{ crawl_config.size|filesizeformat }}</td>
+        </tr>
     </table>
 
     {% if crawl_config.crawls.exists %}
