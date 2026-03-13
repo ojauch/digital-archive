@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <h1>{% translate "Crawl Configurations" %}</h1>
+
+    <a href="{% url 'crawl_configuration_create' %}" class="btn btn-primary">{% translate "New Config" %}</a>
+
+    {% if crawl_configs.exists %}
+        <table class="table">
+            <tr>
+                <th>{% translate "Name" %}</th>
+                <th>{% translate "URL" %}</th>
+                <th>{% translate "Scope" %}</th>
+            </tr>
+            {% for config in crawl_configs %}
+                <tr>
+                    <td>{{ config.name }}</td>
+                    <td>{{ config.url }}</td>
+                    <td>{{ config.scope }}</td>
+                    <td><a href="{% url 'crawl_configuration_detail' pk=config.pk %}">Details</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>{% translate 'No crawl configurations exist yet.' %}</p>
+    {% endif %}
+{% endblock %}

@@ -16,8 +16,38 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
+from crawler.views import (
+    CrawlConfigurationListView,
+    CrawlConfigurationDetailView,
+    CrawlConfigurationCreateView,
+    CrawlConfigurationUpdateView,
+    CrawlConfigurationDeleteView,
+)
 
 urlpatterns = [
+    path("", CrawlConfigurationListView.as_view(), name="crawl_configuration_list"),
+    path(
+        "crawler/configs/<int:pk>",
+        CrawlConfigurationDetailView.as_view(),
+        name="crawl_configuration_detail",
+    ),
+    path(
+        "crawler/configs/<int:pk>/edit",
+        CrawlConfigurationUpdateView.as_view(),
+        name="crawl_configuration_update",
+    ),
+    path(
+        "crawler/configs/<int:pk>/delete",
+        CrawlConfigurationDeleteView.as_view(),
+        name="crawl_configuration_delete",
+    ),
+    path(
+        "crawler/configs/create",
+        CrawlConfigurationCreateView.as_view(),
+        name="crawl_configuration_create",
+    ),
     path("admin/", admin.site.urls),
+    path("accounts/", include("django.contrib.auth.urls")),
 ]

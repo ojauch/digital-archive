@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+
+{% block content %}
+    <h1>{{ heading }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+
+        <div class="d-flex gap-2">
+            <a href="{{ cancel_url }}" class="btn btn-secondary">{% translate 'Cancel' %}</a>
+            <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
+        </div>
+    </form>
+{% endblock %}

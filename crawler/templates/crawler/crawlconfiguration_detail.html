@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <h1>{{ crawl_config }}</h1>
+
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary"
+           href="{% url 'crawl_configuration_update' pk=crawl_config.pk %}">{% translate 'Edit' %}</a>
+        <a class="btn btn-danger"
+           href="{% url 'crawl_configuration_delete' pk=crawl_config.pk %}">{% translate 'Delete' %}</a>
+    </div>
+
+
+    {% if crawl_config.description %}
+        <p>{{ crawl_config|linebreaks }}</p>
+    {% endif %}
+
+    <table class="table">
+        <tr>
+            <th>{% translate 'URL' %}</th>
+            <td>{{ crawl_config.url }}</td>
+        </tr>
+        <tr>
+            <th>{% translate 'Scope' %}</th>
+            <td>{{ crawl_config.scope }}</td>
+        </tr>
+        <tr>
+            <th>{% translate 'Include Rule Regex' %}</th>
+            <td>{{ crawl_config.include }}</td>
+        </tr>
+        <tr>
+            <th>{% translate 'Extra Hops' %}</th>
+            <td>{{ crawl_config.extra_hops }}</td>
+        </tr>
+    </table>
+{% endblock %}

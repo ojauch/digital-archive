@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <h1>{% translate "Delete Crawl Configuration" %}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <p>
+            {% blocktranslate %}
+                Are you sure that you want to delete crawl configuration "{{ crawl_config }}"?
+            {% endblocktranslate %}
+        </p>
+        <button type="submit" class="btn btn-danger">{% translate "Delete" %}</button>
+    </form>
+{% endblock %}
