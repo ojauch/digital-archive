@@ -24,6 +24,7 @@ from crawler.views import (
     CrawlConfigurationCreateView,
     CrawlConfigurationUpdateView,
     CrawlConfigurationDeleteView,
+    start_crawl_view,
 )
 
 urlpatterns = [
@@ -42,6 +43,11 @@ urlpatterns = [
         "crawler/configs/<int:pk>/delete",
         CrawlConfigurationDeleteView.as_view(),
         name="crawl_configuration_delete",
+    ),
+    path(
+        "crawler/configs/<int:pk>/run",
+        start_crawl_view,
+        name="crawl_configuration_start_crawl",
     ),
     path(
         "crawler/configs/create",

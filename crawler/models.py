@@ -67,3 +67,12 @@ class Crawl(models.Model):
     status = models.CharField(
         max_length=20, choices=CRAWL_STATUS, default="created", verbose_name=_("Status")
     )
+    container_id = models.CharField(
+        max_length=100, null=True, blank=True, verbose_name=_("Docker Container ID")
+    )
+    wacz_archive = models.FileField(
+        upload_to="waczs/", null=True, blank=True, verbose_name=_("WACZ Archive")
+    )
+
+    class Meta:
+        ordering = ['-created_at']

@@ -1,10 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext as _
+from django.http import HttpResponseNotAllowed, HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
 
-from .models import CrawlConfiguration
+from .models import CrawlConfiguration, Crawl
+from .crawl_runner import run_crawl
 
 
 class CrawlConfigurationListView(LoginRequiredMixin, ListView):
@@ -61,3 +65,17 @@ class CrawlConfigurationDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return CrawlConfiguration.objects.filter(owner=self.request.user)
+
+
+@login_required
+def start_crawl_view(request, pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    config = get_object_or_404(CrawlConfiguration, pk=pk)
+    if config.owner != request.user:
+        return HttpResponseForbidden(_("Only the owner of a crawl configuration is allowed to start a crawl."))
+
+    crawl = Crawl.objects.create(config=config)
+    run_crawl.enqueue(crawl.id)
+    return redirect(reverse("crawl_configuration_detail", kwargs={"pk": pk}))

@@ -5,6 +5,10 @@
     <h1>{{ crawl_config }}</h1>
 
     <div class="d-flex gap-2">
+        <form method="post" action="{% url 'crawl_configuration_start_crawl' pk=crawl_config.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">{% translate 'Start crawl' %}</button>
+        </form>
         <a class="btn btn-primary"
            href="{% url 'crawl_configuration_update' pk=crawl_config.pk %}">{% translate 'Edit' %}</a>
         <a class="btn btn-danger"
@@ -23,15 +27,36 @@
         </tr>
         <tr>
             <th>{% translate 'Scope' %}</th>
-            <td>{{ crawl_config.scope }}</td>
+            <td>{{ crawl_config.get_scope_display }}</td>
         </tr>
         <tr>
             <th>{% translate 'Include Rule Regex' %}</th>
-            <td>{{ crawl_config.include }}</td>
+            <td>{{ crawl_config.include|default:'-' }}</td>
         </tr>
         <tr>
             <th>{% translate 'Extra Hops' %}</th>
-            <td>{{ crawl_config.extra_hops }}</td>
+            <td>{{ crawl_config.extra_hops|default:'-' }}</td>
         </tr>
     </table>
+
+    {% if crawl_config.crawls.exists %}
+        <h2>{% translate 'Crawls' %}</h2>
+
+        <table class="table">
+            <tr>
+                <th>{% translate 'Status' %}</th>
+                <th>{% translate 'Created at' %}</th>
+                <th>{% translate 'Started at' %}</th>
+                <th>{% translate 'Finished at' %}</th>
+            </tr>
+            {% for crawl in crawl_config.crawls.all %}
+                <tr>
+                    <td>{{ crawl.get_status_display }}</td>
+                    <td>{{ crawl.created_at }}</td>
+                    <td>{{ crawl.started_at|default:'-' }}</td>
+                    <td>{{ crawl.finished_at|default:'-' }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 {% endblock %}

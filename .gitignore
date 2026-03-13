@@ -4,3 +4,5 @@ __pycache__/
 .idea/
 *.sqlite3
 .pgpass
+crawls/
+media/

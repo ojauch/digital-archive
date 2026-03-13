@@ -17,7 +17,7 @@
                 <tr>
                     <td>{{ config.name }}</td>
                     <td>{{ config.url }}</td>
-                    <td>{{ config.scope }}</td>
+                    <td>{{ config.get_scope_display }}</td>
                     <td><a href="{% url 'crawl_configuration_detail' pk=config.pk %}">Details</a></td>
                 </tr>
             {% endfor %}
