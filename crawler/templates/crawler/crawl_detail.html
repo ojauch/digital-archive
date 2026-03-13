@@ -12,7 +12,7 @@
 {% block content %}
     <h1 class="mb-3">{{ crawl.config }} [{{ crawl.id }}]</h1>
 
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-md-9">
             {% if crawl.wacz_archive %}
                 <div class="wacz-archive mb-5">
@@ -26,25 +26,11 @@
                 <pre class="crawl-log">{{ log }}</pre>
             {% endif %}
         </div>
-        <div class="col-md-3">
-            <table class="table">
-                <tr>
-                    <th>{% translate 'Status' %}</th>
-                    <td>{{ crawl.get_status_display }}</td>
-                </tr>
-                <tr>
-                    <th>{% translate 'Created at' %}</th>
-                    <td>{{ crawl.created_at }}</td>
-                </tr>
-                <tr>
-                    <th>{% translate 'Started at' %}</th>
-                    <td>{{ crawl.started_at|default:'-' }}</td>
-                </tr>
-                <tr>
-                    <th>{% translate 'Finished at' %}</th>
-                    <td>{{ crawl.finished_at|default:'-' }}</td>
-                </tr>
-            </table>
+        <div class="col-md-3 text-end">
+            <p><strong>{% translate 'Status' %}</strong><br/>{{ crawl.get_status_display }}</p>
+            <p><strong>{% translate 'Created at' %}</strong><br/>{{ crawl.created_at }}</p>
+            <p><strong>{% translate 'Started at' %}</strong><br/>{{ crawl.started_at|default:'-' }}</p>
+            <p><strong>{% translate 'Finished at' %}</strong><br/>{{ crawl.finished_at|default:'-' }}</p>
         </div>
     </div>
 {% endblock %}

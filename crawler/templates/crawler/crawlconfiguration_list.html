@@ -2,17 +2,21 @@
 {% load i18n %}
 
 {% block content %}
-    <h1>{% translate "Crawl Configurations" %}</h1>
-
-    <a href="{% url 'crawl_configuration_create' %}" class="btn btn-primary">{% translate "New Config" %}</a>
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>{% translate "Crawl Configurations" %}</h1>
+        <a href="{% url 'crawl_configuration_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> {% translate "New Config" %}
+        </a>
+    </div>
 
     {% if crawl_configs.exists %}
-        <table class="table">
+        <table class="table table-striped mt-4">
             <tr>
                 <th>{% translate "Name" %}</th>
                 <th>{% translate "URL" %}</th>
                 <th>{% translate "Scope" %}</th>
                 <th>{% translate "Archive Size" %}</th>
+                <th></th>
             </tr>
             {% for config in crawl_configs %}
                 <tr>

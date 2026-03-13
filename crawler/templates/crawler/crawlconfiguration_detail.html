@@ -2,66 +2,64 @@
 {% load i18n %}
 
 {% block content %}
-    <h1>{{ crawl_config }}</h1>
-
-    <div class="d-flex gap-2">
-        <form method="post" action="{% url 'crawl_configuration_start_crawl' pk=crawl_config.pk %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-success">{% translate 'Start crawl' %}</button>
-        </form>
-        <a class="btn btn-primary"
-           href="{% url 'crawl_configuration_update' pk=crawl_config.pk %}">{% translate 'Edit' %}</a>
-        <a class="btn btn-danger"
-           href="{% url 'crawl_configuration_delete' pk=crawl_config.pk %}">{% translate 'Delete' %}</a>
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>{{ crawl_config }}</h1>
+        <div class="d-flex gap-2">
+            <form method="post" action="{% url 'crawl_configuration_start_crawl' pk=crawl_config.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-play-fill"></i> {% translate 'Start crawl' %}
+                </button>
+            </form>
+            <a class="btn btn-primary"
+               href="{% url 'crawl_configuration_update' pk=crawl_config.pk %}">
+                <i class="bi bi-pencil-fill"></i> {% translate 'Edit' %}
+            </a>
+            <a class="btn btn-danger"
+               href="{% url 'crawl_configuration_delete' pk=crawl_config.pk %}">
+                <i class="bi bi-trash-fill"></i> {% translate 'Delete' %}
+            </a>
+        </div>
     </div>
 
+    <div class="row mt-4">
+        <div class="col-md-9">
+            {% if crawl_config.crawls.exists %}
+                <h2>{% translate 'Crawls' %}</h2>
 
-    {% if crawl_config.description %}
-        <p>{{ crawl_config|linebreaks }}</p>
-    {% endif %}
+                <table class="table table-striped">
+                    <tr>
+                        <th>{% translate 'Status' %}</th>
+                        <th>{% translate 'Created at' %}</th>
+                        <th>{% translate 'Started at' %}</th>
+                        <th>{% translate 'Finished at' %}</th>
+                        <th></th>
+                    </tr>
+                    {% for crawl in crawl_config.crawls.all %}
+                        <tr>
+                            <td>{{ crawl.get_status_display }}</td>
+                            <td>{{ crawl.created_at }}</td>
+                            <td>{{ crawl.started_at|default:'-' }}</td>
+                            <td>{{ crawl.finished_at|default:'-' }}</td>
+                            <td><a href="{% url 'crawl_detail' pk=crawl.pk %}">Details</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
+        <div class="col-md-3">
+            {% if crawl_config.description %}
+                <p>{{ crawl_config|linebreaks }}</p>
+            {% endif %}
 
-    <table class="table">
-        <tr>
-            <th>{% translate 'URL' %}</th>
-            <td>{{ crawl_config.url }}</td>
-        </tr>
-        <tr>
-            <th>{% translate 'Scope' %}</th>
-            <td>{{ crawl_config.get_scope_display }}</td>
-        </tr>
-        <tr>
-            <th>{% translate 'Include Rule Regex' %}</th>
-            <td>{{ crawl_config.include|default:'-' }}</td>
-        </tr>
-        <tr>
-            <th>{% translate 'Extra Hops' %}</th>
-            <td>{{ crawl_config.extra_hops|default:'-' }}</td>
-        </tr>
-        <tr>
-            <th>{% translate 'Archive Size' %}</th>
-            <td>{{ crawl_config.size|filesizeformat }}</td>
-        </tr>
-    </table>
-
-    {% if crawl_config.crawls.exists %}
-        <h2>{% translate 'Crawls' %}</h2>
-
-        <table class="table">
-            <tr>
-                <th>{% translate 'Status' %}</th>
-                <th>{% translate 'Created at' %}</th>
-                <th>{% translate 'Started at' %}</th>
-                <th>{% translate 'Finished at' %}</th>
-            </tr>
-            {% for crawl in crawl_config.crawls.all %}
-                <tr>
-                    <td>{{ crawl.get_status_display }}</td>
-                    <td>{{ crawl.created_at }}</td>
-                    <td>{{ crawl.started_at|default:'-' }}</td>
-                    <td>{{ crawl.finished_at|default:'-' }}</td>
-                    <td><a href="{% url 'crawl_detail' pk=crawl.pk %}">Details</a></td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
+            <div class="text-end">
+                <p><strong>{% translate 'URL' %}</strong><br/><a
+                        href="{{ crawl_config.url }}">{{ crawl_config.url }}</a></p>
+                <p><strong>{% translate 'Scope' %}</strong><br/>{{ crawl_config.get_scope_display }}</p>
+                <p><strong>{% translate 'Include Rule Regex' %}</strong><br>{{ crawl_config.include|default:'-' }}</p>
+                <p><strong>{% translate 'Extra Hops' %}<br/>{{ crawl_config.extra_hops|default:'-' }}</strong></p>
+                <p><strong>{% translate 'Archive Size' %}</strong><br/>{{ crawl_config.size|filesizeformat }}</p>
+            </div>
+        </div>
+    </div>
 {% endblock %}

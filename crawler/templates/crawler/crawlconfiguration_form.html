@@ -4,11 +4,11 @@
 {% block content %}
     <h1>{{ heading }}</h1>
 
-    <form method="post">
+    <form method="post" class="mt-4 mb-5">
         {% csrf_token %}
         {{ form|crispy }}
 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 justify-content-end">
             <a href="{{ cancel_url }}" class="btn btn-secondary">{% translate 'Cancel' %}</a>
             <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
         </div>
