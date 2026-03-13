@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% translate "Digital Archive" %}</title>
     <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+    {% block additional_css %}{% endblock %}
+    {% block js_head %}{% endblock %}
 </head>
 <body>
 <div class="container">

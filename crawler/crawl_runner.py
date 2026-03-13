@@ -1,4 +1,5 @@
 import docker
+import docker.errors
 import os
 import shutil
 import time
@@ -74,3 +75,14 @@ def run_crawl(crawl_id):
     shutil.rmtree(os.path.join(settings.CRAWL_DIRECTORY, "collections", str(crawl.pk)))
 
     crawl.save()
+
+
+def get_container_log(container_id):
+    try:
+        container = client.containers.get(container_id)
+
+        container_log = container.logs()
+        container_log = container_log.decode("utf-8")
+        return container_log
+    except docker.errors.NotFound:
+        return None

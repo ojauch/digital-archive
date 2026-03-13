@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block additional_css %}
+    <link href="{% static 'crawl-detail.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block js_head %}
+    <script src="{% static 'ui.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-3">{{ crawl.config }} [{{ crawl.id }}]</h1>
+
+    <div class="row">
+        <div class="col-md-9">
+            {% if crawl.wacz_archive %}
+                <div class="wacz-archive mb-5">
+                    <replay-web-page source="{{ crawl.wacz_archive.url }}" url="{{ crawl.config.url }}"
+                                     replayBase="/static/" {% if debug %}loading="eager"{% endif %}></replay-web-page>
+                </div>
+            {% endif %}
+
+            {% if log %}
+                <h2>{% translate 'Crawl Log' %}</h2>
+                <pre class="crawl-log">{{ log }}</pre>
+            {% endif %}
+        </div>
+        <div class="col-md-3">
+            <table class="table">
+                <tr>
+                    <th>{% translate 'Status' %}</th>
+                    <td>{{ crawl.get_status_display }}</td>
+                </tr>
+                <tr>
+                    <th>{% translate 'Created at' %}</th>
+                    <td>{{ crawl.created_at }}</td>
+                </tr>
+                <tr>
+                    <th>{% translate 'Started at' %}</th>
+                    <td>{{ crawl.started_at|default:'-' }}</td>
+                </tr>
+                <tr>
+                    <th>{% translate 'Finished at' %}</th>
+                    <td>{{ crawl.finished_at|default:'-' }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+{% endblock %}

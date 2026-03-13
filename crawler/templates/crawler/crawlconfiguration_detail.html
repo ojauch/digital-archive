@@ -55,6 +55,7 @@
                     <td>{{ crawl.created_at }}</td>
                     <td>{{ crawl.started_at|default:'-' }}</td>
                     <td>{{ crawl.finished_at|default:'-' }}</td>
+                    <td><a href="{% url 'crawl_detail' pk=crawl.pk %}">Details</a></td>
                 </tr>
             {% endfor %}
         </table>
