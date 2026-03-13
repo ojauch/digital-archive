@@ -64,7 +64,7 @@ def run_crawl(crawl_id):
     )
 
     if os.path.exists(wacz_path):
-        os.makedirs(os.path.join(settings.MEDIA_ROOT, "waczs"), True)
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, "waczs"), exist_ok=True)
         relative_wacz_path = os.path.join("waczs", f"{crawl.pk}.wacz")
         new_wacz_path = os.path.join(settings.MEDIA_ROOT, relative_wacz_path)
         os.rename(wacz_path, new_wacz_path)
