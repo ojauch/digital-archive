@@ -117,6 +117,10 @@ def get_crawler_command(crawl):
         command.append("--lang")
         command.append(config.lang)
 
+    if config.browser_profile:
+        command.append("--profile")
+        command.append(config.browser_profile.get_docker_profile_path())
+
     return command
 
 

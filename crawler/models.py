@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext as _
@@ -84,6 +87,13 @@ class CrawlConfiguration(models.Model):
     max_page_retries = models.IntegerField(
         default=2, verbose_name=_("Max Page Retries")
     )
+    browser_profile = models.ForeignKey(
+        "BrowserProfile",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Browser Profile"),
+    )
 
     def __str__(self):
         return self.name
@@ -132,3 +142,25 @@ class Crawl(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class BrowserProfile(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Owner"))
+    name = models.CharField(max_length=250, verbose_name=_("Name"))
+    description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
+
+    def get_docker_profile_path(self):
+        return f"/crawls/profiles/{self.id}.tar.gz"
+
+    def get_profile_path(self):
+        return os.path.join(settings.CRAWL_DIRECTORY, "profiles", f"{self.id}.tar.gz")
+
+    def delete(self, using=None, keep_parents=False):
+        profile_path = self.get_profile_path()
+        if os.path.exists(profile_path):
+            os.remove(profile_path)
+
+        super().delete(using, keep_parents)
+
+    def __str__(self):
+        return self.name

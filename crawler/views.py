@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView
@@ -6,10 +8,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext as _
 from django.http import HttpResponseNotAllowed, HttpResponseForbidden
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum
 
-from .models import CrawlConfiguration, Crawl
+from .forms import BrowserProfileCreateForm
+from .models import CrawlConfiguration, Crawl, BrowserProfile
 from .crawl_runner import run_crawl, get_container_log
 
 
@@ -52,6 +55,7 @@ crawl_configuration_fields = [
     "time_limit",
     "lang",
     "max_page_retries",
+    "browser_profile",
 ]
 
 
@@ -125,3 +129,56 @@ def start_crawl_view(request, pk):
     crawl = Crawl.objects.create(config=config)
     run_crawl.enqueue(crawl.id)
     return redirect(reverse("crawl_configuration_detail", kwargs={"pk": pk}))
+
+
+class BrowserProfileListView(LoginRequiredMixin, ListView):
+    model = BrowserProfile
+    context_object_name = "browser_profiles"
+
+
+@login_required
+def browser_profile_create_view(request):
+    if request.method == "POST":
+        form = BrowserProfileCreateForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.instance.owner = request.user
+            profile = form.save()
+
+            profile_dir = os.path.join(settings.CRAWL_DIRECTORY, "profiles")
+            os.makedirs(profile_dir, exist_ok=True)
+
+            profile_path = os.path.join(profile_dir, f"{profile.id}.tar.gz")
+            with open(profile_path, "wb") as f:
+                for chunk in form.cleaned_data["profile_file"].chunks():
+                    f.write(chunk)
+
+            return redirect(reverse("browser_profile_list"))
+    else:
+        form = BrowserProfileCreateForm()
+
+    heading = _("Create Browser Profile")
+    multipart = True
+    return render(
+        request,
+        "crawler/browserprofile_form.html",
+        {"form": form, "heading": heading, "multipart": multipart},
+    )
+
+
+class BrowserProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = BrowserProfile
+    fields = ["name", "description"]
+    success_url = reverse_lazy("browser_profile_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["heading"] = _("Update Browser Profile")
+        context["multipart"] = False
+        return context
+
+
+class BrowserProfileDeleteView(LoginRequiredMixin, DeleteView):
+    model = BrowserProfile
+    success_url = reverse_lazy("browser_profile_list")
+    context_object_name = "browser_profile"

@@ -28,6 +28,10 @@ from crawler.views import (
     CrawlConfigurationDeleteView,
     start_crawl_view,
     CrawlDetailView,
+    BrowserProfileListView,
+    BrowserProfileUpdateView,
+    BrowserProfileDeleteView,
+    browser_profile_create_view,
 )
 
 urlpatterns = [
@@ -61,6 +65,22 @@ urlpatterns = [
         "crawls/<int:pk>",
         CrawlDetailView.as_view(),
         name="crawl_detail",
+    ),
+    path("browsers/", BrowserProfileListView.as_view(), name="browser_profile_list"),
+    path(
+        "browsers/create",
+        browser_profile_create_view,
+        name="browser_profile_create",
+    ),
+    path(
+        "browsers/<int:pk>/edit",
+        BrowserProfileUpdateView.as_view(),
+        name="browser_profile_update",
+    ),
+    path(
+        "browsers/<int:pk>/delete",
+        BrowserProfileDeleteView.as_view(),
+        name="browser_profile_delete",
     ),
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),

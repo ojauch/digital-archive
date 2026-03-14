@@ -32,6 +32,12 @@
                             {% translate 'Crawl Configurations' %}
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if url_name == 'browser_profile_list' %}active" aria-current="page{% endif %}"
+                           href="{% url 'browser_profile_list' %}">
+                            {% translate 'Browser Profiles' %}
+                        </a>
+                    </li>
                 </ul>
             {% endwith %}
         </div>
