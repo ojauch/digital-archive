@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block additional_css %}
+    <link href="{% static 'crawl-list.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">{% translate 'Crawls' %}</h1>
+
+    {% if crawls.exists %}
+        <div class="d-flex flex-wrap gap-3 mb-5 align-items-start">
+            {% for crawl in crawls %}
+                <div class="card crawl">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'crawl_detail' pk=crawl.pk %}">{{ crawl.config.name }}</a>
+                        </h5>
+                        {% if crawl.config.description %}
+                            <p class="card-text">{{ crawl.config.description }}</p>
+                        {% endif %}
+                    </div>
+                    {% if crawl.finished_at %}
+                        <div class="card-footer">
+                            {{ crawl.finished_at|date }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>{% translate 'No crawls exist yet' %}</p>
+    {% endif %}
+{% endblock %}

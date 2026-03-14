@@ -25,6 +25,7 @@ from crawler.views import (
     CrawlConfigurationUpdateView,
     CrawlConfigurationDeleteView,
     start_crawl_view,
+    CrawlListView,
     CrawlDetailView,
     BrowserProfileListView,
     BrowserProfileUpdateView,
@@ -34,7 +35,11 @@ from crawler.views import (
 )
 
 urlpatterns = [
-    path("", CrawlConfigurationListView.as_view(), name="crawl_configuration_list"),
+    path(
+        "crawler/configs/",
+        CrawlConfigurationListView.as_view(),
+        name="crawl_configuration_list",
+    ),
     path(
         "crawler/configs/<int:pk>",
         CrawlConfigurationDetailView.as_view(),
@@ -59,6 +64,11 @@ urlpatterns = [
         "crawler/configs/create",
         CrawlConfigurationCreateView.as_view(),
         name="crawl_configuration_create",
+    ),
+    path(
+        "",
+        CrawlListView.as_view(),
+        name="crawl_list",
     ),
     path(
         "crawls/<int:pk>",

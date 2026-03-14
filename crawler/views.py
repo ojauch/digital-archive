@@ -107,6 +107,14 @@ class CrawlConfigurationDeleteView(LoginRequiredMixin, DeleteView):
         return CrawlConfiguration.objects.filter(owner=self.request.user)
 
 
+class CrawlListView(LoginRequiredMixin, ListView):
+    model = Crawl
+    context_object_name = "crawls"
+
+    def get_queryset(self):
+        return Crawl.objects.filter(config__owner=self.request.user)
+
+
 class CrawlDetailView(LoginRequiredMixin, DetailView):
     model = Crawl
 
