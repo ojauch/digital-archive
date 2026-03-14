@@ -7,9 +7,17 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext as _
-from django.http import HttpResponseNotAllowed, HttpResponseForbidden
+from django.http import (
+    HttpResponseNotAllowed,
+    HttpResponseForbidden,
+    HttpResponseNotFound,
+    FileResponse,
+    HttpResponse,
+    HttpResponseBadRequest,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum
+from werkzeug.http import parse_range_header
 
 from .forms import BrowserProfileCreateForm
 from .models import CrawlConfiguration, Crawl, BrowserProfile
@@ -182,3 +190,75 @@ class BrowserProfileDeleteView(LoginRequiredMixin, DeleteView):
     model = BrowserProfile
     success_url = reverse_lazy("browser_profile_list")
     context_object_name = "browser_profile"
+
+
+@login_required
+def get_wacz(request, crawl_pk):
+    crawl = get_object_or_404(Crawl, pk=crawl_pk)
+
+    if crawl.config.owner != request.user:
+        return HttpResponseForbidden(
+            _("Only the owner of a crawl configuration is allowed to view it's crawls.")
+        )
+
+    if not crawl.wacz_archive:
+        return HttpResponseNotFound(_("Crawl does not have a WACZ archive."))
+
+    range_header = request.headers.get("Range")
+    if range_header:
+        parsed_ranges = parse_range_header(range_header)
+        if not parsed_ranges:
+            return HttpResponse(_("Invalid range header"), status=416)
+
+        ranges = parsed_ranges.ranges
+
+        # only support single ranges for now
+        # TODO: implement multi range support
+        if len(ranges) > 1:
+            return HttpResponseBadRequest(
+                _("Server does only support single range requests.")
+            )
+
+        first_range = ranges[0]
+
+        wacz_file = crawl.wacz_archive
+
+        if (first_range[0] is not None and abs(first_range[0]) > wacz_file.size) or (
+            first_range[1] is not None and first_range[1] > wacz_file.size
+        ):
+            return HttpResponse(_("Range is out of bounds"), status=416)
+
+        if first_range[0] is not None and first_range[0] > 0:
+            wacz_file.seek(first_range[0])
+        # if first value is negative it has to be interpreted as suffix length
+        elif first_range[0] is not None and first_range[0] < 0:
+            offset = first_range[0] + wacz_file.size
+            wacz_file.seek(offset)
+
+        if first_range[1] is not None:
+            data = wacz_file.read(first_range[1] - first_range[0])
+        else:
+            data = wacz_file.read()
+
+        response = HttpResponse(data, status=206)
+
+        if first_range[0] is not None and first_range[0] < 0:
+            content_range_header = f"bytes {first_range[0]}/{wacz_file.size}"
+        elif first_range[1] is None:
+            content_range_header = f"bytes {first_range[0]}-/{wacz_file.size}"
+        elif first_range[0] is None:
+            content_range_header = f"bytes -{first_range[1]}/{wacz_file.size}"
+        else:
+            content_range_header = (
+                f"bytes {first_range[0]}-{first_range[1]}/{wacz_file.size}"
+            )
+
+        response.headers["Content-Range"] = content_range_header
+        filename = os.path.split(wacz_file.name)[1]
+        response.headers["Content-Type"] = "application/zip"
+        response.headers["Content-Disposition"] = f"inline; filename={filename}"
+    else:
+        response = FileResponse(crawl.wacz_archive, content_type="application/zip")
+
+    response.headers["Accept-Ranges"] = "bytes"
+    return response
