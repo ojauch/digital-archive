@@ -6,7 +6,7 @@
 
     <form method="post" class="mt-4 mb-5">
         {% csrf_token %}
-        {{ form|crispy }}
+        {% crispy form %}
 
         <div class="d-flex gap-2 justify-content-end">
             <a href="{{ cancel_url }}" class="btn btn-secondary">{% translate 'Cancel' %}</a>

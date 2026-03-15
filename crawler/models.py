@@ -103,7 +103,7 @@ class CrawlConfiguration(models.Model):
 
 
 class Crawl(models.Model):
-    CRAWL_STATUS = (
+    CRAWL_STATUS_CHOICES = (
         ("created", _("Created")),
         ("running", _("Running")),
         ("finished", _("Finished")),
@@ -125,7 +125,10 @@ class Crawl(models.Model):
         null=True, blank=True, verbose_name=_("Finished at")
     )
     status = models.CharField(
-        max_length=20, choices=CRAWL_STATUS, default="created", verbose_name=_("Status")
+        max_length=20,
+        choices=CRAWL_STATUS_CHOICES,
+        default="created",
+        verbose_name=_("Status"),
     )
     container_id = models.CharField(
         max_length=100, null=True, blank=True, verbose_name=_("Docker Container ID")

@@ -19,7 +19,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Sum
 from werkzeug.http import parse_range_header
 
-from .forms import BrowserProfileCreateForm
+from .forms import BrowserProfileCreateForm, CrawlFilterForm
 from .models import CrawlConfiguration, Crawl, BrowserProfile
 from .crawl_runner import run_crawl, get_container_log
 
@@ -112,7 +112,39 @@ class CrawlListView(LoginRequiredMixin, ListView):
     context_object_name = "crawls"
 
     def get_queryset(self):
-        return Crawl.objects.filter(config__owner=self.request.user)
+        queryset = Crawl.objects.filter(config__owner=self.request.user)
+
+        form = CrawlFilterForm(self.request.GET)
+        if form.is_valid():
+            if form.cleaned_data["query"]:
+                queryset = queryset.filter(
+                    config__name__icontains=form.cleaned_data["query"]
+                )
+
+            if form.cleaned_data["status"]:
+                queryset = queryset.filter(status=form.cleaned_data["status"])
+
+            if form.cleaned_data["date_from"]:
+                queryset = queryset.filter(
+                    finished_at__gte=form.cleaned_data["date_from"]
+                )
+
+            if form.cleaned_data["date_to"]:
+                queryset = queryset.filter(
+                    finished_at__lte=form.cleaned_data["date_to"]
+                )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        form = CrawlFilterForm(self.request.GET)
+        if not form.has_changed():
+            form = CrawlFilterForm()
+        context["form"] = form
+
+        return context
 
 
 class CrawlDetailView(LoginRequiredMixin, DetailView):

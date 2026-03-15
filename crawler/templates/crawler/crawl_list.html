@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n static %}
+{% load i18n static crispy_forms_tags %}
 
 {% block additional_css %}
     <link href="{% static 'crawl-list.css' %}" rel="stylesheet">
@@ -7,6 +7,8 @@
 
 {% block content %}
     <h1 class="mb-4">{% translate 'Crawls' %}</h1>
+
+    {% crispy form form.helper %}
 
     {% if crawls.exists %}
         <div class="d-flex flex-wrap gap-3 mb-5 align-items-start">
