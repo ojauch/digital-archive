@@ -272,6 +272,7 @@ def get_wacz(request, crawl_pk):
     return response
 
 
+@login_required
 def get_crawl_screenshot(request, crawl_pk):
     crawl = get_object_or_404(Crawl, pk=crawl_pk)
     if crawl.config.owner != request.user:
