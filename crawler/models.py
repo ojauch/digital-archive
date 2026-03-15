@@ -139,6 +139,12 @@ class Crawl(models.Model):
         validators=[MinValueValidator(0)],
         verbose_name=_("WACZ File Size"),
     )
+    screenshot = models.FileField(
+        upload_to="wacz-screenshots/",
+        null=True,
+        blank=True,
+        verbose_name=_("Screenshot"),
+    )
 
     class Meta:
         ordering = ["-created_at"]

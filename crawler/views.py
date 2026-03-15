@@ -270,3 +270,16 @@ def get_wacz(request, crawl_pk):
 
     response.headers["Accept-Ranges"] = "bytes"
     return response
+
+
+def get_crawl_screenshot(request, crawl_pk):
+    crawl = get_object_or_404(Crawl, pk=crawl_pk)
+    if crawl.config.owner != request.user:
+        return HttpResponseForbidden(
+            _("Only the owner of a crawl configuration is allowed to view it's crawls.")
+        )
+
+    if not crawl.screenshot:
+        return HttpResponseNotFound(_("Crawl does not have a screenshot."))
+
+    return FileResponse(crawl.screenshot, content_type="image/jpg")

@@ -12,6 +12,9 @@
         <div class="d-flex flex-wrap gap-3 mb-5 align-items-start">
             {% for crawl in crawls %}
                 <div class="card crawl">
+                    {% if crawl.screenshot %}
+                        <img src="{% url 'crawl_screenshot' crawl_pk=crawl.pk %}" class="card-img-top" alt="">
+                    {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">
                             <a href="{% url 'crawl_detail' pk=crawl.pk %}">{{ crawl.config.name }}</a>

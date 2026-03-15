@@ -32,6 +32,7 @@ from crawler.views import (
     BrowserProfileDeleteView,
     browser_profile_create_view,
     get_wacz,
+    get_crawl_screenshot,
 )
 
 urlpatterns = [
@@ -79,6 +80,11 @@ urlpatterns = [
         "crawls/<int:crawl_pk>/wacz",
         get_wacz,
         name="wacz",
+    ),
+    path(
+        "crawls/<int:crawl_pk>/screenshot",
+        get_crawl_screenshot,
+        name="crawl_screenshot",
     ),
     path("browsers/", BrowserProfileListView.as_view(), name="browser_profile_list"),
     path(
