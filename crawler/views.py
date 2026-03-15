@@ -283,4 +283,4 @@ def get_crawl_screenshot(request, crawl_pk):
     if not crawl.screenshot:
         return HttpResponseNotFound(_("Crawl does not have a screenshot."))
 
-    return FileResponse(crawl.screenshot, content_type="image/jpg")
+    return FileResponse(crawl.screenshot, content_type="image/jpeg")
