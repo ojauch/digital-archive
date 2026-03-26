@@ -1,3 +1,5 @@
+import logging
+
 import docker
 import docker.errors
 import os
@@ -14,6 +16,8 @@ from warcio import ArchiveIterator
 from .models import Crawl
 
 client = docker.from_env()
+
+logger = logging.getLogger(__name__)
 
 
 @task
@@ -51,6 +55,9 @@ def finish_crawl(crawl):
     container = client.containers.get(crawl.container_id)
 
     if container.status != "exited":
+        logger.info(
+            f"Stop finishing crawl because container status is {container.status}"
+        )
         return
 
     crawl.status = "finished"
@@ -62,6 +69,7 @@ def finish_crawl(crawl):
     )
 
     if not os.path.exists(wacz_path):
+        logger.info(f"Stop finishing crawl because wacz does not exist")
         return
 
     os.makedirs(os.path.join(settings.MEDIA_ROOT, "waczs"), exist_ok=True)
