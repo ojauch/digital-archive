@@ -19,7 +19,6 @@ client = docker.from_env()
 @task
 def run_crawl(crawl_id):
     crawl = Crawl.objects.get(pk=crawl_id)
-    config = crawl.config
 
     # pull latest crawler image if not already present
     image_name = "webrecorder/browsertrix-crawler"
@@ -44,6 +43,15 @@ def run_crawl(crawl_id):
     while container.status != "exited":
         time.sleep(5)
         container.reload()
+
+    finish_crawl(crawl)
+
+
+def finish_crawl(crawl):
+    container = client.containers.get(crawl.container_id)
+
+    if container.status != "exited":
+        return
 
     crawl.status = "finished"
     crawl.finished_at = timezone.now()
