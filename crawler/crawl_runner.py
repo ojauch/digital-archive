@@ -75,7 +75,7 @@ def finish_crawl(crawl):
     os.makedirs(os.path.join(settings.MEDIA_ROOT, "waczs"), exist_ok=True)
     relative_wacz_path = os.path.join("waczs", f"{crawl.pk}.wacz")
     new_wacz_path = os.path.join(settings.MEDIA_ROOT, relative_wacz_path)
-    os.rename(wacz_path, new_wacz_path)
+    shutil.move(wacz_path, new_wacz_path)
     wacz_file_size = os.path.getsize(new_wacz_path)
     crawl.wacz_archive.name = relative_wacz_path
     crawl.wacz_file_size = wacz_file_size
